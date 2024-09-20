@@ -1,0 +1,908 @@
+filename,success,text
+ddl/alter_change_stream_options.sql,true,"ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', value_capture_type = 'OLD_AND_NEW_VALUES')
+"
+ddl/alter_change_stream_set_drop_for_all.sql,true,"ALTER CHANGE STREAM change_stream_name DROP FOR ALL
+"
+ddl/alter_change_stream_set_for_all.sql,true,"ALTER CHANGE STREAM change_stream_name SET FOR ALL
+"
+ddl/alter_change_stream_set_for_table_columns.sql,true,"ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), table_name2(column1, column2)
+"
+ddl/alter_index_add_stored_column.sql,true,"alter index foo add stored column bar
+"
+ddl/alter_index_drop_stored_column.sql,true,"alter index foo drop stored column bar
+"
+ddl/alter_sequence.sql,true,"ALTER SEQUENCE my_sequence SET OPTIONS (skip_range_min=1, skip_range_max=1234567)
+"
+ddl/alter_table_add_check.sql,true,"alter table foo add check (c1 > 0)
+"
+ddl/alter_table_add_column.sql,true,alter table foo add column baz string(max) not null
+ddl/alter_table_add_column_if_not_exists.sql,true,"alter table foo add column if not exists baz string(max) not null
+"
+ddl/alter_table_add_column_with_if_expression.sql,true,"ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != ""OPEN"" AND status != ""SCHEDULING"", TIMESTAMP_ADD(updated_at, INTERVAL 120 DAY), NULL)) STORED"
+ddl/alter_table_add_constraint_check.sql,true,"alter table foo add constraint cname check (c1 > 0)
+"
+ddl/alter_table_add_constraint_foreign_key.sql,true,"alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2)
+"
+ddl/alter_table_add_constraint_foreign_key_on_delete_cascade.sql,true,"alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2) on delete cascade
+"
+ddl/alter_table_add_constraint_foreign_key_on_delete_no_action.sql,true,"alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2) on delete no action
+"
+ddl/alter_table_add_foreign_key.sql,true,"alter table foo add foreign key (bar) references t2 (t2key1)
+"
+ddl/alter_table_add_row_deletion_policy.sql,true,"alter table foo add row deletion policy ( older_than ( bar, interval 30 day ))
+"
+ddl/alter_table_alter_column.sql,true,alter table foo alter column foo string(256) not null
+ddl/alter_table_alter_column_set.sql,true,alter table foo alter column foo set options(allow_commit_timestamp = true)
+ddl/alter_table_alter_column_set_default.sql,true,"ALTER TABLE actions ALTER COLUMN output SET DEFAULT("""")"
+ddl/alter_table_alter_column_with_default.sql,true,"ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("""")"
+ddl/alter_table_drop_column.sql,true,"alter table foo drop column bar
+"
+ddl/alter_table_drop_constraint.sql,true,"alter table foo drop constraint bar
+"
+ddl/alter_table_drop_row_deletion_policy.sql,true,"alter table foo drop row deletion policy
+"
+ddl/alter_table_replace_row_deletion_policy.sql,true,"alter table foo replace row deletion policy ( older_than ( bar, interval 30 day ))
+"
+ddl/alter_table_set_on_delete.sql,true,alter table foo set on delete cascade
+ddl/alter_table_set_on_delete_no_action.sql,true,alter table foo set on delete no action
+ddl/create_change_stream.sql,true,"CREATE CHANGE STREAM change_stream_name
+"
+ddl/create_change_stream_for_all.sql,true,"CREATE CHANGE STREAM change_stream_name FOR ALL
+"
+ddl/create_change_stream_for_multiple_table_columns.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2)
+"
+ddl/create_change_stream_for_table.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name
+"
+ddl/create_change_stream_for_table_column.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name(column)
+"
+ddl/create_change_stream_for_table_columns.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name(column1, column2)
+"
+ddl/create_change_stream_for_tables.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name1, table_name2
+"
+ddl/create_change_stream_for_tables_with_option.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2)
+OPTIONS(retention_period = '1d')
+"
+ddl/create_change_stream_for_tables_with_option_null.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2)
+OPTIONS(retention_period = null)
+"
+ddl/create_change_stream_for_tables_with_options.sql,true,"CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2)
+OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
+"
+ddl/create_database.sql,false,"create database foo_bar_baz
+"
+ddl/create_index.sql,true,"create index foo_bar on foo (
+  bar desc,
+  baz asc,
+)
+"
+ddl/create_index_if_not_exists.sql,true,"create index if not exists foo_bar on foo (bar)
+"
+ddl/create_index_interleave.sql,true,"create index foo_bar on foo (
+  foo desc
+) storing (bar),
+  interleave in foobar
+"
+ddl/create_index_storing.sql,true,"create index foo_bar on foo (
+  bar asc
+) storing (foo, baz)
+"
+ddl/create_or_replace_view.sql,true,"create or replace view singernames
+sql security invoker
+as select
+    singers.singerid as singerid,
+    singers.firstname || ' ' || singers.lastname as name
+from singers
+"
+ddl/create_role.sql,true,"CREATE ROLE hr_manager
+"
+ddl/create_sequance.sql,true,"CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
+    sequence_kind='bit_reversed_positive',
+    skip_range_min = 1,
+    skip_range_max = 1000,
+    start_with_counter = 50)
+"
+ddl/create_table.sql,true,"create table foo (
+  foo int64,
+  bar float64 not null,
+  baz string(255) not null options(allow_commit_timestamp = null),
+  qux string(255) not null as (concat(baz, ""a"")) stored,
+  foreign key (foo) references t2 (t2key1),
+  foreign key (bar) references t2 (t2key2) on delete cascade,
+  foreign key (baz) references t2 (t2key3) on delete no action,
+  constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  check (foo > 0),
+  constraint cname check (bar > 0),
+  quux json,
+  corge timestamp not null default (current_timestamp())
+) primary key (foo, bar)
+"
+ddl/create_table_cluster.sql,true,"create table foo (
+  foo int64,
+  bar int64
+) primary key (),
+  interleave in parent foobar
+"
+ddl/create_table_cluster_and_row_deletion_policy.sql,true,"create table foo (
+  foo int64,
+  bar int64,
+  baz timestamp,
+) primary key (),
+  interleave in parent foobar,
+  row deletion policy ( older_than ( baz, INTERVAL 30 DAY ) )
+"
+ddl/create_table_cluster_on_delete_no_action.sql,true,"create table foo (
+  foo int64,
+) primary key (foo),
+  interleave in parent foobar
+             on delete no action"
+ddl/create_table_cluster_set_on_delete.sql,true,"create table foo (
+  foo int64
+) primary key (foo),
+  interleave in parent foobar
+             on delete cascade"
+ddl/create_table_if_not_exists.sql,true,"create table if not exists foo (
+  foo int64,
+  bar float64 not null,
+) primary key (foo, bar)
+"
+ddl/create_table_row_deletion_policy.sql,true,"create table foo (
+  foo int64,
+  bar int64,
+  baz timestamp,
+) primary key (),
+  row deletion policy ( older_than ( baz, INTERVAL 30 DAY ) )
+"
+ddl/create_table_trailing_comma.sql,true,"create table foo (
+  foo int64,
+  bar int64,
+) primary key(
+  foo asc,
+  bar desc,
+)
+"
+ddl/create_table_types.sql,false,"create table types (
+  b bool,
+  i int64,
+  f32 float32,
+  f float64,
+  d date,
+  t timestamp,
+  s string(256),
+  smax string(max),
+  bs bytes(256),
+  bsmax bytes(max),
+  ab array<bool>,
+  abs array<bytes(max)>
+) primary key (i)
+"
+ddl/create_table_with_sequence_function.sql,true,"CREATE TABLE foo
+(
+    foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)),
+    bar STRING( MAX),
+    id  INT64
+)PRIMARY KEY (id)
+"
+ddl/create_uniq_null_filtered_index.sql,true,"create unique null_filtered index foo_bar on foo (foo)
+"
+ddl/create_vector_index.sql,false,"CREATE VECTOR INDEX IF NOT EXISTS hello_vector_index ON hello(embedding)
+OPTIONS(distance_type = 'COSINE')"
+ddl/create_vector_index_where_column_not_null.sql,false,"CREATE VECTOR INDEX hello_vector_index ON hello(embedding)
+WHERE embedding IS NOT NULL
+OPTIONS(distance_type = 'COSINE')"
+ddl/create_view.sql,true,"create view singernames
+sql security invoker
+as select
+    singers.singerid as singerid,
+    singers.firstname || ' ' || singers.lastname as name
+from singers
+"
+ddl/create_view_sql_security_definer.sql,true,"create view singernames
+sql security definer
+as select
+    singers.singerid as singerid,
+    singers.firstname || ' ' || singers.lastname as name
+from singers
+"
+ddl/drop_change_stream.sql,true,"DROP CHANGE STREAM change_stream_name
+"
+ddl/drop_index.sql,true,"drop index foo_bar
+"
+ddl/drop_index_if_exists.sql,true,"drop index if exists foo_bar
+"
+ddl/drop_role.sql,true,"DROP ROLE hr_manager
+"
+ddl/drop_sequence.sql,true,"DROP SEQUENCE my_sequence
+"
+ddl/drop_sequence_if_exits.sql,true,"DROP SEQUENCE IF EXISTS my_sequence
+"
+ddl/drop_table.sql,true,"drop table foo
+"
+ddl/drop_table_if_exists.sql,true,"drop table if exists foo
+"
+ddl/drop_vector_index.sql,false,DROP VECTOR INDEX hello_vector_index
+ddl/grant_execute_on_table_function.sql,true,GRANT EXECUTE ON TABLE FUNCTION READ_SingersNameStream TO ROLE hr_manager
+ddl/grant_privileges.sql,true,"GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager, hr_member
+"
+ddl/grant_role.sql,true,"GRANT ROLE pii_access, pii_writter TO ROLE hr_manager, hr_director
+"
+ddl/grant_select_on_view.sql,true,GRANT SELECT ON VIEW singernames TO ROLE hr_manager
+ddl/revoke_execute_on_table_function.sql,true,REVOKE EXECUTE ON TABLE FUNCTION READ_SingersNameStream FROM ROLE hr_manager
+ddl/revoke_privileges.sql,true,"REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager, hr_member
+"
+ddl/revoke_role.sql,true,"REVOKE ROLE pii_access, pii_writter FROM ROLE hr_manager, hr_director
+"
+ddl/revoke_select_on_view.sql,true,REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager
+query/select_album_with_index_directive.sql,true,"SELECT AlbumId, AlbumTitle, MarketingBudget
+FROM Albums@{FORCE_INDEX=AlbumsByAlbumTitle}
+WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
+"
+query/select_alias_without_as.sql,false,"select 1 A
+"
+query/select_array_with_struct.sql,false,"SELECT
+  *
+FROM
+  UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[(1, 'foo'), (3, 'bar')])
+"
+query/select_cast.sql,false,"select cast(1 as INT64), cast(0.1 as float32), cast((struct(), 1, [2, 3], [""4"", ""5""]) as struct<struct<>, x int64, y array<int64>, z array<string>>)
+from x tablesample BERNOULLI (cast(0.1 as float64) percent),
+     y tablesample BERNOULLI (cast(1 as int64) rows),
+     z tablesample BERNOULLI (cast(@param as int64) rows)
+limit cast(1 as INT64) offset cast(@foo as INT64)
+"
+query/select_complex_with_array_path.sql,false,"SELECT
+  *
+FROM
+  ComplexTable,
+  ComplexTable.IntArray
+"
+query/select_complex_with_unnest_array_path.sql,true,"SELECT
+  *
+FROM
+  ComplexTable,
+  UNNEST(ComplexTable.IntArray)
+"
+query/select_count_asterisk.sql,true,"select count(*) from singers
+"
+query/select_count_distinct.sql,true,select count(distinct x) from foo
+query/select_expr.sql,false,"select 1 + 2, 1 - 2,
+       1 * 2, 2 / 2,
+       +1++1, -1+-1,
+       +1.2, -3.4,
+       ~1 ^ ~1,
+       1 ^ 2, 2 & 1, 2 | 1,
+       1 << 2, 2 >> 1,
+       foo.bar * +foo.bar * -foo.bar,
+       (select 1 `1`).1,
+       NOT NOT true,
+       [1, 2, 3][offset(1)],
+       [1, 2, 3][`offset`(1)],
+       [1, 2, 3][ordinal(1)],
+       case
+       when 1 = 1 then ""1 = 1""
+       else            ""else""
+       end,
+       case 1
+       when 1 then ""1""
+       when 2 then ""2""
+       else        ""other""
+       end,
+       date_add(date ""2019-09-01"", interval 5 day),
+       timestamp_add(timestamp ""2019-09-01 08:11:22"", interval 5 hour),
+       1 in (1, 2, 3),
+       2 in unnest([1, 2, 3]),
+       3 in (select 1 union all select 2 union all select 3),
+       [1] || [2],
+       IF (1 > 1, 1, 2)+1 AS result,
+"
+query/select_expr_extract.sql,false,"select
+    extract(nanosecond from timestamp ""2019-09-01 08:11:23""),
+    extract(microsecond from timestamp ""2019-09-01 08:11:23""),
+    extract(millisecond from timestamp ""2019-09-01 08:11:23""),
+    extract(second from timestamp ""2019-09-01 08:11:23""),
+    extract(minute from timestamp ""2019-09-01 08:11:23""),
+    extract(hour from timestamp ""2019-09-01 08:11:23""),
+    extract(dayofweek from date ""2019-09-01""),
+    extract(day from date ""2019-09-01""),
+    extract(dayofyear from date ""2019-09-01""),
+    extract(dayofyear from date ""2019-09-01""),
+    extract(week from date ""2019-09-01""),
+    extract(isoweek from date ""2019-09-01""),
+    extract(month from date ""2019-09-01""),
+    extract(quarter from date ""2019-09-01""),
+    extract(year from date ""2019-09-01""),
+    extract(isoyear from date ""2019-09-01""),
+    extract(date from timestamp ""2019-09-01 08:11:23""),
+    extract(hour from timestamp ""2019-09-01 08:11:23"" at time zone ""Asia/Tokyo"")
+"
+query/select_hint.sql,false,"@{hint1 = 1, hint2 = 2} select hint"
+query/select_literals_all.sql,false,"SELECT
+  ""abc"",
+  ""it's"",
+  'it\'s',
+  'Title: ""Boy""',
+  """"""abc"""""",
+  '''it's''',
+  '''Title:""Boy""''',
+  '''two
+lines''',
+  '''why\?''',
+  R""abc+"",
+  r'''abc+''',
+  R""""""abc+"""""",
+  r'f\(abc,(.*),def\)',
+  B""abc"",
+  B'''abc''',
+  b""""""abc"""""",
+  br'abc+',
+  RB""abc+"",
+  RB'''abc''',
+  123,
+  0xABC,
+  -123,
+  -0xABC,
+  123.456e-67,
+  .1E4,
+  58.,
+  4e2,
+  [1, 2, 3],
+  ['x', 'y', 'xy'],
+  ARRAY[1, 2, 3],
+  ARRAY<string>['x', 'y', 'xy'],
+  ARRAY<int64>[],
+  ARRAY(SELECT STRUCT(1, 2, 3)),
+  ARRAY(SELECT (1, 2, 3)),
+  DATE '2014-09-27',
+  DATE('2014-09-27'),
+  TIMESTAMP '2014-09-27 12:30:00.45-08',
+  TIMESTAMP ""2014-09-27 12:30:00.45 America/Los_Angeles"",
+  TIMESTAMP'2014-09-27',
+  TIMESTAMP('2014-09-27'),
+  NUMERIC '0',
+  NUMERIC ""0"",
+  true, fals"
+query/select_literals_array.sql,false,"SELECT
+  [1, 2, 3],
+  ['x', 'y', 'xy'],
+  ARRAY[1, 2, 3],
+  ARRAY<string>['x', 'y', 'xy'],
+  ARRAY<int64>[]
+"
+query/select_literals_array_invalid.sql,true,"SELECT
+  [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
+"
+query/select_literals_bytes.sql,true,"SELECT
+  B""abc"",
+  B'''abc''',
+  b""""""abc"""""",
+  b""""""abc\n"""""",
+  br'abc+',
+  RB""abc+"",
+  RB'''abc''',
+  RB'''abc\n''',
+  B""\000"",
+  B""\077\077\077""
+"
+query/select_literals_date.sql,false,"SELECT
+  DATE'2014-09-27',
+  DATE('2014-09-27'),
+  DATE r'2014-09-27',
+  TIMESTAMP '2014-09-27 12:30:00.45-08',
+  TIMESTAMP ""2014-09-27 12:30:00.45 America/Los_Angeles"",
+  TIMESTAMP'2014-09-27',
+  TIMESTAMP('2014-09-27'),
+  TIMESTAMP r'2014-09-27',
+  DATE('2014-09-27') AS FOO,
+  TIMESTAMP('2014-09-27') AS BAR
+"
+query/select_literals_float.sql,true,"SELECT
+  123.456e-3,
+  .1E4,
+  58.,
+  4e2
+"
+query/select_literals_int.sql,true,"SELECT
+  123,
+  0xABC,
+  -123,
+  -0xABC
+"
+query/select_literals_paren.sql,true,"SELECT (1)
+"
+query/select_literals_paren_with_operator.sql,true,"SELECT (1+1)
+"
+query/select_literals_string.sql,true,"SELECT
+  ""abc!"",
+  ""a\nb!"",
+  ""\075!"",
+  ""\x3d!"",
+  ""\x3D!"",
+  ""\X3d!"",
+  ""\X3D!"",
+  ""\u203C!"",
+  ""\U0001F408!"",
+  ""it's"",
+  'it\'s',
+  'Title: ""Boy""',
+  """"""abc"""""",
+  '''it's''',
+  '''Title:""Boy""''',
+  '''two
+lines''',
+  '''why\?''',
+  R""abc+"",
+  r'''abc+''',
+  R""""""abc+"""""",
+  r'f\(abc,(.*),def\)'
+"
+query/select_literals_struct.sql,false,"SELECT
+  ARRAY(SELECT STRUCT(1, 2, 3)),
+  ARRAY(SELECT STRUCT(1, 2, TRUE)),
+  ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)),
+  ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)),
+  ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)),
+  ARRAY(SELECT (1, 2, 3)),
+  ARRAY(SELECT STRUCT<>()),
+  EXISTS(SELECT (1, 2))
+"
+query/select_nest_complex.sql,false,"select *
+from (
+    (((select 1 A union all (select 2)) union distinct (select 1)) limit 1)
+  JOIN
+    (select 1 A, 2 B) USING (A)
+)
+"
+query/select_select_limit_expr.sql,false,"select ((select 1) limit 1 offset 0) + 3
+"
+query/select_select_set_operator_expr.sql,false,"select ((select 1) union all (select 2)) + 3,
+       ((select 1) intersect all (select 1)) + 3,
+       ((select 1) except all (select 1)) + 3
+"
+query/select_singer_with_as_struct_subquery.sql,false,"SELECT
+  ARRAY(
+    (
+      SELECT AS STRUCT
+        *
+      FROM Singers LIMIT 100
+    )
+  )
+"
+query/select_singer_with_asterisk.sql,true,"SELECT
+  *
+FROM
+  Singers
+"
+query/select_singer_with_column_and_asterisk.sql,true,"SELECT
+  SingerId,
+  *
+FROM
+  Singers
+"
+query/select_singer_with_column_names.sql,true,"SELECT
+  SingerId AS ID,
+  FirstName,
+  LastName,
+  SingerInfo,
+  BirthDate
+FROM Singers
+"
+query/select_singer_with_cross_join.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  CROSS JOIN
+  Singers B
+"
+query/select_singer_with_distinct.sql,true,"SELECT
+  DISTINCT
+  *
+FROM
+  Singers
+"
+query/select_singer_with_full_join.sql,true,"SELECT
+  *
+FROM
+  Singers AS A,
+  Singers AS B
+"
+query/select_singer_with_groupby.sql,true,"SELECT
+  FirstName, BirthDate
+FROM
+  Singers
+GROUP BY
+  FirstName, BirthDate
+"
+query/select_singer_with_hash_join.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  HASH JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+  APPLY JOIN
+  Singer C
+  ON B.SingerID = C.SingerID
+  LOOP JOIN
+  Singer D
+  ON C.SingerID = D.SingerID
+"
+query/select_singer_with_having.sql,false,"SELECT
+  SingerID
+FROM
+  Singers
+GROUP BY
+  SingerID
+HAVING
+  SingerID = 1
+"
+query/select_singer_with_in_and_unnest.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerId IN UNNEST(ARRAY[1, 2, 3])
+"
+query/select_singer_with_in_and_unnest_with_query_parameter.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerId IN UNNEST(@singerIDs)
+"
+query/select_singer_with_join.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+"
+query/select_singer_with_join_hint.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN@{FORCE_JOIN_ORDER=TRUE}
+  Singers B
+  ON A.SingerID = B.SingerID
+  JOIN@{JOIN_TYPE=HASH_JOIN}
+  Singers C
+  ON A.SingerID = C.SingerID
+  JOIN@{JOIN_TYPE=APPLY_JOIN}
+  Singers D
+  ON A.SingerID = D.SingerID
+  JOIN@{JOIN_TYPE=LOOP_JOIN}
+  Singers E
+  ON A.SingerID = E.SingerID
+"
+query/select_singer_with_join_twice.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+  INNER JOIN
+  Singers C
+  ON A.SingerID = C.SingerID
+"
+query/select_singer_with_join_using.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN
+  Singers B
+  USING (SingerID, FirstName)
+"
+query/select_singer_with_join_various.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+  INNER JOIN
+  Singers C
+  ON A.SingerID = C.SingerID
+  CROSS JOIN
+  Singers D
+  FULL JOIN
+  Singers E
+  ON A.SingerID = E.SingerID
+  FULL OUTER JOIN
+  Singers F
+  ON A.SingerID = F.SingerID
+  LEFT JOIN
+  Singers G
+  ON A.SingerID = G.SingerID
+  LEFT OUTER JOIN
+  Singers H
+  ON A.SingerID = H.SingerID
+  RIGHT JOIN
+  Singers I
+  ON A.SingerID = I.SingerID
+  RIGHT OUTER JOIN
+  Singers J
+  ON A.SingerID = J.SingerID
+"
+query/select_singer_with_limit.sql,true,"SELECT
+  *
+FROM
+  Singers
+LIMIT 100
+"
+query/select_singer_with_limit_and_skiprows.sql,true,"SELECT
+  *
+FROM
+  Singers
+LIMIT 100
+OFFSET 10
+"
+query/select_singer_with_orderby.sql,false,"SELECT
+  *
+FROM
+  Singers
+ORDER BY
+  FirstName,
+  LastName COLLATE ""en_US"",
+  BirthDate DESC"
+query/select_singer_with_query_parameter.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = @singerID
+  AND @singerID = SingerID
+"
+query/select_singer_with_root_parent.sql,false,"( SELECT * FROM Singers )
+"
+query/select_singer_with_select_in_from.sql,false,"SELECT
+  *
+FROM (
+  SELECT
+    *
+  FROM
+    Singers
+  WHERE
+    SingerID = 1
+)
+"
+query/select_singer_with_select_in_from_and_as.sql,false,"SELECT
+  *
+FROM (
+  SELECT
+    *
+  FROM
+    Singers
+  WHERE
+    SingerID = 1
+) as S
+"
+query/select_singer_with_single_column_subquery.sql,false,"SELECT (
+  SELECT FirstName
+  FROM Singers LIMIT 100
+)
+"
+query/select_singer_with_single_column_subquery_with_at.sql,false,"SELECT (
+  SELECT FirstName
+  FROM Singers LIMIT 100
+) AS FN
+"
+query/select_singer_with_table_alias.sql,false,"SELECT
+  S.*,
+  S.SingerId as ID,
+  S.FirstName
+FROM Singers S
+"
+query/select_singer_with_table_alias_with_hint.sql,true,"SELECT
+  *
+FROM
+  Singers@{FORCE_INDEX=SingersByFirstLastName} AS S
+"
+query/select_singer_with_table_hint.sql,true,"SELECT
+  *
+FROM
+  Singers@{FORCE_INDEX=SingersByFirstLastName}
+"
+query/select_singer_with_tablesample.sql,true,"SELECT
+  *
+FROM
+  Singers AS A TABLESAMPLE RESERVOIR (100 ROWS),
+  Singers AS B TABLESAMPLE BERNOULLI (0.1 PERCENT),
+  Singers AS C TABLESAMPLE BERNOULLI (0.1 PERCENT)
+"
+query/select_singer_with_tableset.sql,false,"SELECT * FROM Singers
+UNION ALL
+SELECT * FROM Singers
+"
+query/select_singer_with_tableset_complex.sql,false,"SELECT * FROM Singers
+UNION ALL
+(
+  SELECT * FROM Singers
+  UNION DISTINCT
+  (
+    SELECT * FROM Singers
+    INTERSECT ALL
+    (
+      SELECT * FROM Singers
+      INTERSECT DISTINCT
+      (
+        SELECT * FROM Singers
+        EXCEPT ALL
+        (
+          SELECT * FROM Singers
+          EXCEPT DISTINCT
+          SELECT * FROM Singers
+        )
+      )
+    )
+  )
+)
+"
+query/select_singer_with_tableset_with_where.sql,false,"SELECT * FROM Singers
+UNION ALL
+SELECT * FROM Singers
+WHERE
+  SingerId = 1
+ORDER BY
+  FirstName
+"
+query/select_singer_with_toplevel_join_hint.sql,false,"@{FORCE_JOIN_ORDER=TRUE}
+SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+"
+query/select_singer_with_value_hex.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = 0xF
+"
+query/select_singer_with_where.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = 1
+"
+query/select_singer_with_where_and_comparison.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = 1
+  OR SingerID < 1
+  OR SingerID > 1
+  OR SingerID <= 1
+  OR SingerID >= 1
+  OR SingerID != 1
+  OR SingerID IN (1, 2, 3)
+  OR SingerID NOT IN (1, 2, 3)
+  OR SingerID BETWEEN 1 AND 3
+  OR SingerID NOT BETWEEN 1 AND 3
+  OR FirstName LIKE ""%a""
+  OR FirstName NOT LIKE ""%a""
+  OR NULL IS NULL
+  OR NULL IS NOT NULL
+  OR (SingerID = 1) IS TRUE
+  OR (SingerID = 1) IS NOT TRUE
+  OR (SingerID = 1) IS FALSE
+  OR (SingerID = 1) IS NOT FALSE
+"
+query/select_singer_with_where_and_op.sql,true,"SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = 1 OR FirstName = ""foobar"" AND LastName = ""fizzbuzz""
+"
+query/select_struct_compare_eq.sql,false,"SELECT ARRAY(
+  SELECT
+    *
+  FROM
+    (SELECT STRUCT<X INT64, Y INT64, Y INT64>(1, 2, 3)) AS S
+  WHERE S = STRUCT(STRUCT(1, 2, 3))
+)
+"
+query/select_tablesample_with_cross_join.sql,false,"SELECT
+  *
+FROM
+  Singers A
+  CROSS JOIN
+  Singers B
+  TABLESAMPLE BERNOULLI (90 PERCENT)
+"
+query/select_tablesample_with_subquery.sql,false,"SELECT
+  *
+FROM
+  (SELECT * FROM Singers) TABLESAMPLE BERNOULLI (90 PERCENT)
+"
+query/select_tablesample_with_table.sql,true,"SELECT
+  *
+FROM
+  Singers TABLESAMPLE BERNOULLI (90 PERCENT)
+"
+query/select_tablesample_with_table_alias.sql,true,"SELECT
+  *
+FROM
+  Singers AS S TABLESAMPLE BERNOULLI (90 PERCENT)
+"
+query/select_tablesample_with_unnest_invalid.sql,false,"SELECT
+  *
+FROM
+  UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[(1, 'foo'), (3, 'bar')]) TABLESAMPLE BERNOULLI (90 PERCENT)
+"
+query/select_union_chain.sql,false,"(select 1) union all (select 2) union all (select 3)
+"
+query/select_unnest_with_offset.sql,false,"SELECT
+  *
+FROM
+  UNNEST([1,2,3]) @{hint = 1} WITH OFFSET
+"
+query/select_unnest_with_offset_and_alias.sql,false,"SELECT
+  *
+FROM
+  UNNEST([1,2,3]) AS value WITH OFFSET AS num
+"
+query/select_unnest_with_offset_and_alias_min.sql,false,"SELECT
+  *
+FROM
+  UNNEST([1,2,3]) value WITH OFFSET num
+"
+query/select_with_after_hint.sql,false,"@{hint1 = 1} with subq1 as (select c1 from foo) select * from subq1
+"
+query/select_with_comment.sql,true,"-- foobar
+select 1
+"
+query/select_with_field_path.sql,false,"SELECT
+  A.x,
+  A.y,
+  A.z.a,
+  A.z.b
+FROM
+  UNNEST(
+    ARRAY(
+      SELECT AS STRUCT
+        x,
+        y,
+        z
+      FROM
+        UNNEST(ARRAY<STRUCT<x INT64, y STRING, z STRUCT<a INT64, b INT64>>>[(1, 'foo', (2, 3)), (3, 'bar', (4, 5))])
+    )
+  ) AS A
+WHERE A.z.a = 2
+"
+query/select_with_multiple_ctes.sql,false,"with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from subq1
+"
+query/select_with_reservedword.sql,true,"SELECT
+  *
+FROM
+  `UNNEST`
+"
+query/select_with_sequence_function.sql,true,"SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
+"
+query/select_with_trailing_comma.sql,false,"SELECT 1, 2,"
+dml/delete _from.sql,true,delete from foo where foo = 1 and bar = 2
+dml/delete.sql,true,delete foo where foo = 1 and bar = 2
+dml/delete_as.sql,false,delete foo as F where F.foo = 1
+dml/insert_into_values.sql,true,"insert into foo (foo, bar, baz)
+values (1, 2, 3),
+       (4, 5, 6)"
+dml/insert_or_ignore.sql,false,"INSERT OR IGNORE INTO foo
+(foo, bar) VALUES (1, 2)"
+dml/insert_or_update.sql,false,"INSERT OR UPDATE INTO foo
+(foo, bar) VALUES (1, 2)"
+dml/insert_select.sql,false,"insert foo (foo, bar)
+select * from unnest([(1, 2), (3, 4)])"
+dml/insert_values.sql,true,"insert foo (foo, bar, baz)
+values (1, 2, 3),
+       (4, 5, 6)"
+dml/insert_values_default.sql,true,"insert foo (foo, bar)
+values (1, default)"
+dml/insert_with_sequence_function.sql,true,"INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
+"
+dml/update.sql,true,"update foo set foo = bar, bar = foo where foo = 1"
+dml/update_as.sql,false,update foo as F set F.foo = F.bar + 1 where foo = F.bar
