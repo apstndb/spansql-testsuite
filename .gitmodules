@@ -1,0 +1,3 @@
+[submodule "memefish"]
+	path = memefish
+	url = https://github.com/cloudspannerecosystem/memefish
